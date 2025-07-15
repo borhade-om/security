@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "Spring")
+@Mapper(componentModel = "spring")
 public interface StateMapper {
 
     State toEntity(StateDto stateDto);

@@ -2,13 +2,12 @@ package com.batch.BatchProcessing.mapper;
 
 import com.batch.BatchProcessing.dto.UserDto;
 import com.batch.BatchProcessing.entity.User;
-import java.time.LocalDateTime;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-07-14T15:40:56+0530",
+    date = "2025-07-15T16:49:23+0530",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -20,16 +19,10 @@ public class UserMapperImpl implements UserMapper {
             return null;
         }
 
-        String userName = null;
-        String password = null;
+        User user = new User();
 
-        userName = userDto.getUserName();
-        password = userDto.getPassword();
-
-        Long userId = null;
-        LocalDateTime createdAt = null;
-
-        User user = new User( userId, userName, password, createdAt );
+        user.setUserName( userDto.getUserName() );
+        user.setPassword( userDto.getPassword() );
 
         return user;
     }
