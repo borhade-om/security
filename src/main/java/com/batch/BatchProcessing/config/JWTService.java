@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,15 +20,17 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
-    private String secretKey;
+    private String secretKey="CF2YJApSupE3o4epHmp9QdY6NkhgggoZVOt8X8moqqc=";
 
-    public String generateToken(User byUserName) {
+
+
+    public String generateToken( UserDetails userDetails) {
         Map<String,Object> claims= new HashMap<>();
         return Jwts
                 .builder()
                 .claims()
                 .add(claims)
-                .subject(byUserName.getUserName())
+                .subject(userDetails.getUsername())
                 .issuer("om")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+60*20*1000))
@@ -37,13 +41,12 @@ public class JWTService {
     }
 
     private SecretKey generateKey(){
-        byte[] decode = Decoders.BASE64.decode(getSecretKey());
-        return Keys.hmacShaKeyFor(decode);
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String getSecretKey(){
-        return secretKey="ZiLXL+qnejB8NLscBHa24NKM96WhMSriKvoIYw+Z3gU=";
-    }
+//    public String getSecretKey(){
+//        return secretKey="CF2YJApSupE3o4epHmp9QdY6NkhgggoZVOt8X8moqqc=";
+//    }
 
     public String extractUserName(String token) {
         return extractClaims(token, Claims::getSubject);
@@ -60,7 +63,6 @@ public class JWTService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

@@ -36,7 +36,9 @@ public class SecurityConfig {
 //        this.jwtFilter = jwtFilter;
 //    }
 
+
     @Lazy
+    @Autowired
     public SecurityConfig(UserService userService, JWTFilter jwtFilter) {
         this.userDetailsService = userService;
         this.jwtFilter = jwtFilter;
@@ -51,20 +53,14 @@ public class SecurityConfig {
               .authorizeHttpRequests(request-> request
                       .requestMatchers("/v3/api-docs", "/v3/api-docs/**","/swagger-ui/**", "/swagger-ui.html","/swagger-ui/index.html#")
                       .permitAll()
-                      .requestMatchers("/User/**")
+                      .requestMatchers("/User/**","/User/signin")
                       .permitAll()
                       .anyRequest()
                       .authenticated())
-              .addFilterBefore(jwtFilter,
-                      UsernamePasswordAuthenticationFilter.class);
+              .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+       return httpSecurity.build();
+    }
 
-//
-       return httpSecurity. build();
-    }
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return new UserService();
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -73,8 +69,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService());
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+      provider.setUserDetailsService(userDetailsService); // use injected service
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }

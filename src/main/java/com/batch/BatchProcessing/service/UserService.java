@@ -65,13 +65,13 @@ public class UserService implements UserDetailsService {
     }
 
     public String verify(UserDto userDto) {
-        User byUserName = userRepository.findByUserName(userDto.getUserName());
+//        User byUserName = userRepository.findByUserName(userDto.getUserName());
         Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(byUserName.getUserName(), byUserName.getPassword())
+                new UsernamePasswordAuthenticationToken(userDto.getUserName(), userDto.getPassword())
         );
-
+        UserDetails userDetails = loadUserByUsername(userDto.getUserName());
         if (authenticate.isAuthenticated()) {
-            return jwtService.generateToken(byUserName);
+            return jwtService.generateToken(userDetails);
         } else {
             throw new UsernameNotFoundException("user not present");
         }

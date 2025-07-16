@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -42,14 +44,24 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<String> userSignIn(@RequestBody UserDto userDto){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getUserName(),userDto.getPassword()));
-        UserDetails userDetails = userService.loadUserByUsername(userDto.getUserName());
-        User byUserName = userRepository.findByUserName(userDto.getUserName());
-        return new ResponseEntity<String>(jwtService.generateToken(byUserName), HttpStatus.FOUND);
+       try {
+           Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getUserName(), userDto.getPassword()));
+       }
+       catch (BadCredentialsException e) {
+           return ResponseEntity.status(401).body("Authentication fail");
+       }
+       UserDetails userDetails = userService.loadUserByUsername(userDto.getUserName());
+       return new ResponseEntity<String>(jwtService.generateToken(userDetails), HttpStatus.FOUND);
     }
 
     @PostMapping("/simple/signin")
     public String verify(@RequestBody UserDto userDto){
-        return userService.verify(userDto);
+        try {
+            return userService.verify(userDto);
+        }
+        catch (BadCredentialsException ex){
+            return "bad credentials";
+        }
+
     }
 }
